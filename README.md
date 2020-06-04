@@ -6,7 +6,7 @@ IEEE 1588-2008 PTPv2 Client for NodeJS. Tested with ptp4l and in an AES67 Networ
 
 ## Usage
 Example usage:
-```
+```javascript
 var ptpv2 = require('ptpv2');
 
 ptpv2.init('192.168.1.100', 0, function(){
