@@ -1,5 +1,5 @@
 # node-ptpv2
-IEEE1588:2008 PTPv2 Client for NodeJS. Tested with ptp4l and in an AES67 Network. Needs to be executed with priviliges, because the PTP client needs to bind to ports < 1000. Implements _Delay_req_ and _Delay_resp_ syncing only.
+IEEE 1588-2008 PTPv2 Client for NodeJS. Tested with ptp4l and in an AES67 Network. Needs to be executed with priviliges, because the PTP client needs to bind to ports < 1000. Implements _Delay_req_ and _Delay_resp_ syncing only.
 
 ## Install
 ` npm install ptpv2 `
