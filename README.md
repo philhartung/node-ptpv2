@@ -18,7 +18,7 @@ ptpv2.init('192.168.1.100', 0, function(){
 });
 ```
 
-This should output: `true '08-00-27-ff-fe-26-55-1f:0' [ 1591294070, 112285378 ]`
+This should output `true '08-00-27-ff-fe-26-55-1f:0' [ 1591294070, 112285378 ]` when synced to a master.
 
 ### ptpv2.init(address, domain, callback)
 Initialize the PTP system. Needs the address of the interface on which the multicast group binds to. Also takes the PTP domain number (0 - 3) and a callback that is executed, when the client synced to the master.
