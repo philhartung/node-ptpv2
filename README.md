@@ -7,12 +7,12 @@ IEEE 1588-2008 PTPv2 Client for NodeJS. Tested with ptp4l and in an AES67 Networ
 ## Usage
 Example usage:
 ```
-var ptp = require('ptpv2');
+var ptpv2 = require('ptpv2');
 
-ptp.init('192.168.1.100', 0, function(){
-	var synced = ptp.is_synced();
-	var ptpMaster = ptp.ptp_master();
-	var time = ptp.ptp_time();
+ptpv2.init('192.168.1.100', 0, function(){
+	var synced = ptpv2.is_synced();
+	var ptpMaster = ptpv2.ptp_master();
+	var time = ptpv2.ptp_time();
 
 	console.log(synced, ptpMaster, time);
 });
