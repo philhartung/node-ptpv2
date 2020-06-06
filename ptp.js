@@ -66,6 +66,10 @@ ptpClientEvent.on('listening', function() {
 ptpClientEvent.on('message', function(buffer, remote) {
 	var recv_ts = process.hrtime();//safe timestamp for ts1
 
+	//check buffer length
+	if(buffer.length < 31)
+		return;
+
 	//read values from buffer
 	var type = buffer.readUInt8(0) & 0x0f;
 	var version = buffer.readUInt8(1);
@@ -105,9 +109,8 @@ ptpClientEvent.on('message', function(buffer, remote) {
 		t1 = [tsS, tsNS];
 
 		//send delay_req
-		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain], function(err){
-			t2 = process.hrtime();
-		});
+		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain]);
+		t2 = process.hrtime();
 	}
 });
 
@@ -119,6 +122,10 @@ ptpClientGeneral.on('listening', function() {
 ptpClientGeneral.on('message', function(buffer, remote) {
 	//safe timestamp for ts2
 	var recv_ts = process.hrtime();
+
+	//check buffer length
+	if(buffer.length < 31)
+		return;
 
 	//read values from buffer
 	var type = buffer.readUInt8(0) & 0x0f;
@@ -140,9 +147,8 @@ ptpClientGeneral.on('message', function(buffer, remote) {
 		t1 = [tsS, tsNS];
 
 		//send delay_req
-		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain], function(err){
-			t2 = process.hrtime();
-		});
+		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain]);
+		t2 = process.hrtime();
 	}else if(type == 0x09 && req_seq == sequence){ //delay_rsp msg
 		//read ts2 timestamp
 		var tsS = (buffer.readUInt16BE(34) << 4) + buffer.readUInt32BE(36);
