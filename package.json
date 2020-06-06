@@ -1,0 +1,23 @@
+{
+  "name": "ptpv2",
+  "version": "1.0.0",
+  "description": "IEEE1588:2008 PTPv2 client implementation",
+  "main": "ptp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/philhartung/node-ptpv2.git"
+  },
+  "keywords": [
+    "IEEE1588",
+    "PTPv2"
+  ],
+  "author": "Philipp Hartung",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/philhartung/node-ptpv2/issues"
+  },
+  "homepage": "https://github.com/philhartung/node-ptpv2#readme"
+}
