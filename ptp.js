@@ -23,10 +23,12 @@ var req_seq = 0;
 var ptp_delay_req = function(){
 	var length = 52;
 	var buffer = Buffer.alloc(length);
+	req_seq = (req_seq + 1) % 0x10000;
+	
 	buffer.writeUInt8(1, 0);
 	buffer.writeUInt8(2, 1);
 	buffer.writeUInt16BE(length, 2);
-	buffer.writeUInt16BE(++req_seq, 30);
+	buffer.writeUInt16BE(req_seq, 30);
 	
 	return buffer;
 }
