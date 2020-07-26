@@ -12,7 +12,10 @@
   },
   "keywords": [
     "IEEE1588",
-    "PTPv2"
+    "PTPv2",
+    "AES67",
+    "Dante",
+    "AoIP"
   ],
   "author": "Philipp Hartung",
   "license": "GPL-3.0-or-later",
