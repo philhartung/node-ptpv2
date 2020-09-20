@@ -8,8 +8,8 @@ var addr = '127.0.0.1';
 var cb = function(){};
 
 //PTPv2
-var ptpClientEvent = dgram.createSocket('udp4');
-var ptpClientGeneral = dgram.createSocket('udp4');
+var ptpClientEvent = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+var ptpClientGeneral = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 var ptpMulticastAddrs = ['224.0.1.129', '224.0.1.130', '224.0.1.131', '224.0.1.132'];
 
 //vars
