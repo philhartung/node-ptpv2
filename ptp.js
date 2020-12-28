@@ -56,8 +56,8 @@ exports.init = function(interface, domain, callback){
 	ptp_domain = domain ? domain : 0;
 	cb = callback ? callback : function(){};
 
-	ptpClientEvent.bind(319, addr);
-	ptpClientGeneral.bind(320, addr);
+	ptpClientEvent.bind(319);
+	ptpClientGeneral.bind(320);
 }
 
 //event msg client
