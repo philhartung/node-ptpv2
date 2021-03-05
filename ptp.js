@@ -6,6 +6,7 @@ var ptpMaster = '';
 var sync = false;
 var addr = '127.0.0.1';
 var cb = function(){};
+var minSyncInterval = 1000; // in ms
 
 //PTPv2
 var ptpClientEvent = dgram.createSocket({ type: 'udp4', reuseAddr: true });
@@ -17,6 +18,7 @@ var t1, ts1, t2, ts2;
 var offset = [0, 0];
 var sync_seq;
 var req_seq = 0;
+var lastSync = 0;
 
 //functions
 //creates ptp delay_req buffer
@@ -101,7 +103,7 @@ ptpClientEvent.on('message', function(buffer, remote) {
 	if((flags & 0x0200) == 0x0200){
 		//two step, wait for follow_up msg for accurate t1
 		ts1 = recv_ts;
-	}else{
+	}else if(Date.now() - lastSync > minSyncInterval){
 		//got accurate t1 (no follow_up msg)
 		ts1 = recv_ts;
 
@@ -142,7 +144,7 @@ ptpClientGeneral.on('message', function(buffer, remote) {
 	if(version != 2 || domain != ptp_domain)
 		return;
 
-	if(type == 0x08 && sync_seq == sequence){ //follow up msg with current seq
+	if(type == 0x08 && sync_seq == sequence && Date.now() - lastSync > minSyncInterval){ //follow up msg with current seq
 		//read t1 timestamp
 		var tsS = (buffer.readUInt16BE(34) << 4) + buffer.readUInt32BE(36);
 		var tsNS = buffer.readUInt32BE(40);
@@ -160,6 +162,7 @@ ptpClientGeneral.on('message', function(buffer, remote) {
 		//calc offset
 		offset[0] = 0.5 * (ts1[0] - t1[0] - ts2[0] + t2[0]);
 		offset[1] = 0.5 * (ts1[1] - t1[1] - ts2[1] + t2[1]);
+		lastSync = Date.now();
 
 		//check if the clock was synced before
 		if(!sync){
