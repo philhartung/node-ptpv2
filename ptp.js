@@ -35,6 +35,14 @@ var ptp_delay_req = function(){
 	return buffer;
 }
 
+var getCorrectedTime = function(){
+	var time = process.hrtime();
+	var timeS = time[0] - offset[0];
+	var timeNS = time[1] - offset[1];
+
+	return [timeS, timeNS];
+}
+
 //export functions
 //calculated ptp time
 exports.ptp_time = function(){
@@ -68,7 +76,7 @@ ptpClientEvent.on('listening', function() {
 });
 
 ptpClientEvent.on('message', function(buffer, remote) {
-	var recv_ts = process.hrtime();//safe timestamp for ts1
+	var recv_ts = getCorrectedTime();//safe timestamp for ts1
 
 	//check buffer length
 	if(buffer.length < 31)
@@ -113,8 +121,11 @@ ptpClientEvent.on('message', function(buffer, remote) {
 		t1 = [tsS, tsNS];
 
 		//send delay_req
-		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain]);
-		t2 = process.hrtime();
+		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain], function(){
+			t2 = getCorrectedTime();
+		});
+
+		t2 = getCorrectedTime();
 	}
 });
 
@@ -125,7 +136,7 @@ ptpClientGeneral.on('listening', function() {
 
 ptpClientGeneral.on('message', function(buffer, remote) {
 	//safe timestamp for ts2
-	var recv_ts = process.hrtime();
+	var recv_ts = getCorrectedTime();
 
 	//check buffer length
 	if(buffer.length < 31)
@@ -151,8 +162,12 @@ ptpClientGeneral.on('message', function(buffer, remote) {
 		t1 = [tsS, tsNS];
 
 		//send delay_req
-		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain]);
-		t2 = process.hrtime();
+		ptpClientEvent.send(ptp_delay_req(), 319, ptpMulticastAddrs[ptp_domain], function(){
+			t2 = getCorrectedTime();
+		});
+
+		t2 = getCorrectedTime();
+
 	}else if(type == 0x09 && req_seq == sequence){ //delay_rsp msg
 		//read ts2 timestamp
 		var tsS = (buffer.readUInt16BE(34) << 4) + buffer.readUInt32BE(36);
@@ -160,8 +175,21 @@ ptpClientGeneral.on('message', function(buffer, remote) {
 		ts2 = [tsS, tsNS];
 
 		//calc offset
-		offset[0] = 0.5 * (ts1[0] - t1[0] - ts2[0] + t2[0]);
-		offset[1] = 0.5 * (ts1[1] - t1[1] - ts2[1] + t2[1]);
+		var delta = [0, 0];
+		delta[0] = 	0.5 * (ts1[0] - t1[0] - ts2[0] + t2[0]);
+		delta[1] = 	0.5 * (ts1[1] - t1[1] - ts2[1] + t2[1]);
+
+		if(delta[0] != 0){
+			var correction = (delta[0] * 1000000000) + delta[1];
+
+			if(Math.abs(correction) < 1000000000){
+				delta[0] = 0;
+				delta[1] = correction;
+			}
+		}
+
+		offset[0] += delta[0];
+		offset[1] += delta[1];
 		lastSync = Date.now();
 
 		//check if the clock was synced before
