@@ -6,7 +6,7 @@ var ptpMaster = '';
 var sync = false;
 var addr = '127.0.0.1';
 var cb = function(){};
-var minSyncInterval = 1000; // in ms
+var minSyncInterval = 10000; // in ms
 
 //PTPv2
 var ptpClientEvent = dgram.createSocket({ type: 'udp4', reuseAddr: true });
@@ -175,21 +175,14 @@ ptpClientGeneral.on('message', function(buffer, remote) {
 		ts2 = [tsS, tsNS];
 
 		//calc offset
-		var delta = [0, 0];
-		delta[0] = 	0.5 * (ts1[0] - t1[0] - ts2[0] + t2[0]);
-		delta[1] = 	0.5 * (ts1[1] - t1[1] - ts2[1] + t2[1]);
+		let delta = (0.5 * (ts1[0] - t1[0] - ts2[0] + t2[0])) * 1000000000 + 0.5 * (ts1[1] - t1[1] - ts2[1] + t2[1]);
 
-		if(delta[0] != 0){
-			var correction = (delta[0] * 1000000000) + delta[1];
+		let deltaSplit = [0, 0];
+		deltaSplit[1] = (delta % 1000000000);
+		deltaSplit[0] = Math.round((delta - deltaSplit[1]) / 1000000000);
 
-			if(Math.abs(correction) < 1000000000){
-				delta[0] = 0;
-				delta[1] = correction;
-			}
-		}
-
-		offset[0] += delta[0];
-		offset[1] += delta[1];
+		offset[0] += deltaSplit[0];
+		offset[1] += deltaSplit[1];
 		lastSync = Date.now();
 
 		//check if the clock was synced before
