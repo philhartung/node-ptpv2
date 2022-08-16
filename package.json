@@ -1,6 +1,6 @@
 {
   "name": "ptpv2",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "IEEE1588:2008 PTPv2 client implementation",
   "main": "ptp.js",
   "scripts": {
