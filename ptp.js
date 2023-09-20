@@ -72,6 +72,7 @@ exports.init = function(interface, domain, callback){
 
 //event msg client
 ptpClientEvent.on('listening', function() {
+	ptpClientEvent.setMulticastInterface(addr);
 	ptpClientEvent.addMembership(ptpMulticastAddrs[ptp_domain], addr);
 });
 
